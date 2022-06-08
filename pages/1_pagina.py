@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import os
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 def pagina():
     st.write("Prueba")
@@ -37,7 +39,7 @@ if all_years:
         ) #If all years are checked the multiselector show all years 
 else:
     year= container_year.multiselect(
-        "Elija una/varios año(s)", list(df["AÑO"].drop_duplicates().dropna()),2019
+        "Elija una/varios año(s)", list(df["AÑO"].drop_duplicates().dropna()),(2019,2018)
         ) #If all years is not checked the multiselector show 2019 by default
 
 
@@ -46,6 +48,13 @@ else:
 #1. Location filter
 #2. Year Filter
 #----------------------------------
+
+data_loc= df.set_index(["LOCALIDAD"]).loc[location]
+data_year= data_loc.reset_index().set_index("AÑO").loc[year][["LOCALIDAD","General"]].reset_index()
+fig= plt.figure(figsize=(10,8))
+sns.lineplot(data=data_year, x="AÑO", y="General", hue="LOCALIDAD",dashes=False,err_style=None)
+plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+st.pyplot(fig)
 
 st.write("Porcentaje de cumplimiento por localidad")
 
